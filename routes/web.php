@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
+
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GameController;
+use App\Livewire\Counter;
+
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+/*Route::view('dashboard', 'dashboard')
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');*/
+    
+Route::get('dashboard', DashboardController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::redirect('settings', 'settings/profile');
+
+    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
+    Volt::route('settings/password', 'settings.password')->name('settings.password');
+    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+    Route::post('/games/{game}/join', [GameController::class, 'join'])->name('games.join');
+    //Route::get('/games/{game}', [GameController::class, 'show'])->name('games.show');
+    Route::resource('games', GameController::class);
+});
+
+require __DIR__.'/auth.php';
